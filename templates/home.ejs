@@ -1,0 +1,28 @@
+<div class="row">  
+    
+   <% for(var i=0; i<anuncios.length; i++) { %>
+
+    <div class="col s6 m3">
+     <a href="<%= anuncios[i].url %>" target="_blank">
+      <div class="card small">
+        <div class="card-image">
+          <img class="img" src="<%= anuncios[i].img %>">
+          
+        </div>
+
+        <div class="card-content">
+
+        <% if(anuncios[i].price != 0) { %>
+        <p style="color:#494848"><b><%= anuncios[i].price %> CUC </b></p>
+        <%  } else { %>
+          <p>&nbsp;</p>
+       <% } %>
+        <p style="color:#494848;font-size: 16px;"><%= anuncios[i].title %></p>
+         <p style="margin-top:10px;color:#909090;font-size:15px;"><i class="material-icons" style="vertical-align: -6px;margin-right:5px;font-size:12x;">access_time</i>hace un momento</p>
+        </div>
+        
+      </div>
+    </a>
+    </div>
+    <% } %>
+</div>

@@ -1,0 +1,59 @@
+<div class="row">
+    <div class="col input-field outline search-field">
+        <i class="material-icons" onclick="sendData()">search</i>
+        <input id="q" type="text" class="search-input" onkeyup="validate()" value="<%= q %>"/>
+        <label for="q">Buscar</label>
+    </div>
+
+    <div class="col s12">
+        <% for(var i = 0; i < anuncios.length; i++) { %>
+            <div class="col s12 search-result">
+                <span class="result-date"><%= anuncios[i].date %></span>
+                <br>
+                <img src="{{APP_IMAGE_PATH}}/<%= anuncios[i].img %>" class="result-thumb">
+
+                <a class="result-title" onclick="showDetail(<%= JSON.stringify(anuncios[i]) %>)">
+                    <% if(anuncios[i].price != 0) { %>
+                        <%= anuncios[i].price %> CUC -
+                    <% } %>
+                    <%= anuncios[i].title %>
+                </a>
+
+                <p class="result-desc"><%= anuncios[i].desc %></p>
+                <small class="result-url"><%= anuncios[i].short_url %></small>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<div class="fixed-action-btn">
+    <a class="btn-floating btn-large">
+        <i class="large material-icons">menu</i>
+    </a>
+    <ul>
+        <li><a class="btn-floating btn-small" onclick="sendDataCategory('casas','1')"><i class="material-icons amber darken-1">home</i></a></li>
+        <li><a class="btn-floating btn-small" onclick="sendDataCategory('autos','2')"><i class="material-icons blue accent-4">directions_car</i></a></li>
+        <li><a class="btn-floating btn-small" onclick="sendDataCategory('electronica','3')"><i class="material-icons red darken-3">tv</i></a></li>
+        <li><a class="btn-floating btn-small" onclick="sendDataCategory('servicios','4')"><i class="material-icons amber darken-1">view_list</i></a></li>
+        <li><a class="btn-floating btn-small" onclick="sendDataCategory('ventas','5')"><i class="material-icons green darken-2">trending_up</i></a></li>
+        <li><a class="btn-floating btn-small" onclick="sendDataCategory('empleos','6')"><i class="material-icons blue accent-4">business_center</i></a></li>
+    </ul>
+</div>
+
+<div class="row" style="margin:0;margin-top:20px;margin-bottom: 20px;">
+    <div class="col s12 m12">
+        <ul class="pagination">
+            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+
+            <% for(var i = 1;i <= page_count;i++){ %>
+
+                <% if(page == i){ %>
+                <li class="active"><a href=""><%= i %></a></li>
+                <% } else{ %>
+                <li class="waves-effect"><a href="" onclick="sendDataUrl('<%= q %>','<%= i %>')"><%= i %></a></li>
+            <% } } %>
+
+            <li class="waves-effect"><a href=""><i class="material-icons">chevron_right</i></a></li>
+        </ul>
+    </div>
+</div>
