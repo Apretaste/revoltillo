@@ -18,11 +18,12 @@ class Service
 
 	public function _search(Request $request, Response $response)
 	{
-		$anuncios = [];
 		$size = 20;
 		$from = 0;
+		$ads = array();
 
 		$q = $request->input->data->q;
+
 
 		//$params = '{"size":"'.$size.'","from":"'.$from.'","sort":{"created_at":{"order":"desc"}},"query":{"term":{"category":"' .$q. '"}}}';
 
@@ -31,8 +32,9 @@ class Service
 
 		$data = $this->search($params);
 
+
 		$results = $data['results'];
-		$total = $data['total'];
+		$total = $data['total'];        
 
 
 		$page_count = floor($total / $size);
@@ -42,64 +44,34 @@ class Service
 			$page_count = 10;
 		}
 
-		foreach ($results as $res) {
+		foreach($results as $res){
 
-			$title = $res['_source']['title'];
-			$title = ucfirst(strtolower($title));
+			$id = $res['_source']['external_id'];
+			$publish_date = $res['_source']['publish_date'];
+			$title = html_entity_decode(ucfirst(strtolower($res['_source']['title'])));
+			$description = $res['_source']['description'];
 			$price = $res['_source']['price'];
-			$desc = ucfirst(strtolower(mb_substr($res['_source']['body'], 0, 120)));
-			$desc_full = ucfirst(strtolower($res['_source']['body']));
 			$url = $res['_source']['url'];
-			$date = $res['_source']['published_at'];
-			$img = $res['_source']['image_url'];
-			$name = $res['_source']['name'];
-			$email = $res['_source']['email'];
-			$phone = $res['_source']['phones'];
-			//$this->short_url($url);
+			$image_url = $res['_source']['image_urls'];
 
-			//$title =mb_strimwidth($title, 0, 30, "...");
-
-			$anuncios[] = [
+			$ads[] = [
+				'id'=>$id,
 				'title' => $title,
-				'desc' => $desc,
-				'desc_full' => $desc_full,
+				'short_description' => $this->getShortDesc($description),			
 				'price' => number_format($price),
 				'url' => $url,
-				'date' => $this->convert_date($date),
-				'short_url' => $this->short_url($url),
-				'img' => $img,
-				'name' => $name,
-				'email' => $email,
-				'phone' => $phone
+				'site'=>$this->getSiteName($url),
+				'publish_date' =>$this->convertDate($publish_date),				
+				'image_urls' => $image_url
+							
 			];
-
-		}
-
-		// Data de prueba
-		// save image file
-		$filePath = Utils::getTempDir() . Utils::generateRandomHash() . ".jpg";
-		$imgContent = file_get_contents("https://www.logaster.com/blog/wp-content/plugins/wp-amp-ninja/images/placeholder.png");
-		file_put_contents($filePath, $imgContent);
-
-		$images[] = $filePath;
-
-		$anuncios = [[
-			'title' => "iPhone 7 como nuevo",
-			'desc' => " Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet",
-			'desc_full' => "",
-			'price' => 350,
-			'url' => "www.revolico.com/blablabla",
-			'date' => date('d M, Y'),
-			'short_url' => "www.revolico.com",
-			'img' => $filePath,
-			'name' => "Blabla",
-			'email' => "blabla@gmail.com",
-			'phone' => "53555555"
-		]];
+		}	
+		
+		
 
 		$content = [
 			"q" => $q,
-			"anuncios" => $anuncios,
+			"results" => $ads,
 			"page" => 1,
 			"total" => $total,
 			"page_count" => $page_count
@@ -107,7 +79,7 @@ class Service
 
 		// $this->short_url
 
-		$response->setTemplate("search.ejs", $content, $images);
+		$response->setTemplate("search.ejs", $content);
 
 	}
 
@@ -115,7 +87,6 @@ class Service
 	public function _searchurl(Request $request, Response $response)
 	{
 
-		$anuncios = [];
 		$title = "";
 		$image_url = "";
 		$to = 0;
@@ -146,45 +117,11 @@ class Service
 
 			$page_count = 10;
 		}
-
-
-		foreach ($results as $res) {
-
-			$title = $res['_source']['title'];
-			$title = ucfirst(strtolower($title));
-			$price = $res['_source']['price'];
-			$desc = ucfirst(strtolower(mb_substr($res['_source']['body'], 0, 120)));
-			$desc_full = ucfirst(strtolower($res['_source']['body']));
-			$url = $res['_source']['url'];
-			$date = $res['_source']['published_at'];
-			$img = $res['_source']['image_url'];
-			$name = $res['_source']['name'];
-			$email = $res['_source']['email'];
-			$phone = $res['_source']['phones'];
-			//$this->short_url($url);
-
-			//$title =mb_strimwidth($title, 0, 30, "...");
-
-			$anuncios[] = [
-				'title' => $title,
-				'desc' => $desc,
-				'desc_full' => $desc_full,
-				'price' => number_format($price),
-				'url' => $url,
-				'date' => $this->convert_date($date),
-				'short_url' => $this->short_url($url),
-				'img' => $img,
-				'name' => $name,
-				'email' => $email,
-				'phone' => $phone
-			];
-		}
-
-		// print_r(count($anuncios));
+		
 
 		$content = [
 
-			"anuncios" => $anuncios,
+			"results" => $results,
 			"page" => $page,
 			"q" => $q,
 			"total" => $total,
@@ -201,7 +138,6 @@ class Service
 	public function _searchCategory(Request $request, Response $response)
 	{
 
-		$anuncios = [];
 		$title = "";
 		$image_url = "";
 		$to = 0;
@@ -233,45 +169,12 @@ class Service
 
 			$page_count = 10;
 		}
-
-
-		foreach ($results as $res) {
-
-			$title = $res['_source']['title'];
-			$title = ucfirst(strtolower($title));
-			$price = $res['_source']['price'];
-			$desc = ucfirst(strtolower(mb_substr($res['_source']['body'], 0, 120)));
-			$desc_full = ucfirst(strtolower($res['_source']['body']));
-			$url = $res['_source']['url'];
-			$date = $res['_source']['published_at'];
-			$img = $res['_source']['image_url'];
-			$name = $res['_source']['name'];
-			$email = $res['_source']['email'];
-			$phone = $res['_source']['phones'];
-			//$this->short_url($url);
-
-			//$title =mb_strimwidth($title, 0, 30, "...");
-
-			$anuncios[] = [
-				'title' => $title,
-				'desc' => $desc,
-				'desc_full' => $desc_full,
-				'price' => number_format($price),
-				'url' => $url,
-				'date' => $this->convert_date($date),
-				'short_url' => $this->short_url($url),
-				'img' => $img,
-				'name' => $name,
-				'email' => $email,
-				'phone' => $phone
-			];
-
-		}
+		
 
 		// print_r(count($anuncios));
 
 		$content = [
-			"anuncios" => $anuncios,
+			"ads" => $results,
 			"page" => $page,
 			"q" => $q,
 			"total" => $total,
@@ -285,27 +188,68 @@ class Service
 
 	}
 
-	private function short_url($url)
-	{
+	public function _showdetail(Request $request, Response $response){
 
-		$values = parse_url($url);
-		$host = "https://www." . $values['host'];
-		$path_parts = explode('/', trim($values['path']));
-		$path_parts = array_filter($path_parts);
+		$ad = array();
 
-		$path = $path_parts[count($path_parts) - 1];
+		$id = $request->input->data->id;
 
-		return $host . "/.../" . $path;
+        $data = $this->getAdDetailById($id);
+
+        $result = $data['results'][0]['_source'];
+
+        $ad = [
+            'title'=>html_entity_decode(ucfirst(strtolower($result['title']))),
+            'description'=> html_entity_decode(ucfirst(strtolower($result['description']))),
+            'price'=>number_format($result['price']),
+            'publish_date' =>$this->convertDate($result['publish_date']),				
+			'image_urls' => $result['image_urls'],
+			'name'=>$result['advertiser_name'],
+			'email'=>$result['advertiser_emails'],
+			'phone'=>$result['advertiser_phones']
+
+        ];
+
+
+
+		$content = [
+               'ad'=>$ad
+		];
+
+		$response->setTemplate("detail.ejs", $content);
+	}
+
+	private function getAdDetailById($id){
+      
+      $params = '{"query":{"term":{"external_id":"' . $id . '"}}}';
+
+	  $data = $this->search($params);
+
+	  return $data;
 
 	}
 
-	private function convert_date($date)
+	private function getSiteName($url)
+	{
+
+		$parse = parse_url($url);		
+
+		return $parse['host'];
+
+	}
+
+	private function convertDate($date)
 	{
 
 		date_default_timezone_set('America/Havana');
 
 		return date('d M, Y', $date);
 
+	}
+
+	private function getShortDesc($description){
+
+		return html_entity_decode(ucfirst(strtolower(mb_substr($description, 0, 120))));
 	}
 
 	private function search($params)
@@ -316,7 +260,7 @@ class Service
 		);
 
 		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_URL, "http://67.205.179.37:9200/ads/ad/_search");
+		curl_setopt($curl, CURLOPT_URL, "http://167.99.147.172:9200/ads/_search");
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
@@ -338,54 +282,6 @@ class Service
 
 	}
 
-	public function _showdetail(Request $request, Response $response)
-	{
-
-		$title = "";
-		$body = "";
-		$price = 0;
-		$body = "";
-		$img_url = "";
-		$name = "";
-		$email = "";
-		$phone = "";
-
-		// print_r($request->input->data->anuncio);
-		$anuncio = $request->input->data->anuncio;
-
-		$title = html_entity_decode(ucfirst($anuncio->title));
-		$price = $anuncio->price;
-		//$body = htmlentities($anuncio->desc_full);
-		$body = html_entity_decode(ucfirst($anuncio->desc_full));
-		$date = $anuncio->date;
-		$email = $anuncio->email;
-		$name = $anuncio->name;
-		$phone = $anuncio->phone;
-		$img_url = $anuncio->img;
-		//echo $img_url;
-		//print_r($anuncio->img);
-
-
-		$ad = [
-			'title' => $title,
-			'price' => $price,
-			'date' => $date,
-			'body' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-			'calificacion' => 4,
-			'reviews' => 13,
-			'img_url' => Utils::getTempDir().$img_url,
-			'name' => $name,
-			'email' => $email,
-			'phone' => $phone,
-			'q' => 'iPhone' // la busqueda previa
-		];
-
-		$content = [
-			'anuncio' => $ad
-		];
-
-		$response->setTemplate("detail.ejs", $content, [Utils::getTempDir().$img_url]);
-	}
-
+	
 
 }

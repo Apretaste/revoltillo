@@ -76,6 +76,16 @@
 	border: 1px solid lightgrey;
 }
 
+.responsive-img {
+  display: block;
+  max-width:540px;
+  max-height:350px;
+  width: auto;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 #article-img{
 	background: #c0e5b8;
 	text-align: center;

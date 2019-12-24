@@ -1,49 +1,36 @@
 <div class="row">
 	<div class="col s12" id="article-details">
-		<% if(anuncio.img_url != "") { %>
+		<% if(ad.image_urls) { %>
 		<div id="article-img" class="valign-wrapper">
-			<img class="responsive-img" src="{{APP_IMAGE_PATH}}<%=anuncio.img_url %>">
+			<img class="responsive-img" src="<%=ad.image_urls[0] %>">
 		</div>
 		<% } %>
 
 		<div id="article-content">
 			<span class="result-title">
-				<% if(anuncio.price != 0) { %>
-					<%= anuncio.price %> -
+				<% if(ad.price != 0) { %>
+					<%= ad.price %> -
 				<% } %>
-				<%= anuncio.title %>
+				<%= ad.title %>
 		</span>
-			<br>
+			<br>			
 
-			<% var starColors = ['amber-text text-darken-1', 'blue-text text-accent-4', 'red-text text-darken-3', 'green-text text-darken-2', 'amber-text text-darken-1'] %>
+			<p><%= ad.publish_date %></p>
+			<p><%= ad.description %></p>
 
-			<p>
-				<% for(var k = 0; k < anuncio.calificacion; k++) {%>
-					<i class="material-icons <%= starColors[k] %>">star</i>
-				<% } %>
-				<% for(var k = 0; k < 5 - anuncio.calificacion; k++) {%>
-					<i class="material-icons">star_border</i>
-				<% } %>
-
-				<%= anuncio.reviews %> Reviews
-			</p>
-
-			<p><%= anuncio.date %></p>
-			<p><%= anuncio.body %></p>
-
-			<% if(anuncio.name != "") { %>
-				<p class="contact-name"><i class="material-icons amber-text text-darken-1">person</i> <%= anuncio.name %> </p>
+			<% if(ad.name) { %>
+				<p class="contact-name"><i class="material-icons amber-text text-darken-1">person</i> <%= ad.name %> </p>
 			<% } %>
-			<% if(anuncio.email != "") { %>
-				<p class="contact-email"><i class="material-icons blue-text text-accent-4">email</i> <%= anuncio.email %> </p>
+			<% if(ad.email) { %>
+				<p class="contact-email"><i class="material-icons blue-text text-accent-4">email</i> <%= ad.email %> </p>
 			<% } %>
-			<% if(anuncio.phone != "") { %>
-				<p class="contact-phone"><i class="material-icons green-text text-darken-2">phone</i> <%= anuncio.phone %> </p>
+			<% if(ad.phone) { %>
+				<p class="contact-phone"><i class="material-icons green-text text-darken-2">phone</i> <%= ad.phone %> </p>
 			<% } %>
 		</div>
 	</div>
 
-	<div class="fixed-action-btn" onclick="apretaste.send({'command': 'REVOLTILLO SEARCH', 'data': {'q': anuncio.q}})">
+	<div class="fixed-action-btn" onclick="apretaste.send({'command': 'REVOLTILLO SEARCH'})">
 		<a class="btn-floating btn-large">
 			<i class="large material-icons">arrow_back</i>
 		</a>

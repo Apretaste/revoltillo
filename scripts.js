@@ -61,10 +61,10 @@ function sendDataCategory(q, page) {
 	});
 }
 
-function showDetail(anuncio) {
+function showDetail(id) {
 	apretaste.send({
 		command: "REVOLTILLO SHOWDETAIL",
-		'data': {'anuncio': anuncio},
+		'data': {'id': id},
 		'redirect': true
 	});
 }
