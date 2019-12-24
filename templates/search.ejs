@@ -1,30 +1,29 @@
 <div class="row">
-    <div class="col input-field outline search-field">
-        <i class="material-icons" onclick="sendData()">search</i>
-        <input id="q" type="text" class="search-input" onkeyup="validate()" value="<%= q %>"/>
-        <label for="q">Buscar</label>
-
-    </div>   
+	<div class="col input-field outline search-field">
+		<i class="material-icons" onclick="sendData()">search</i>
+		<input id="q" type="text" class="search-input" onkeyup="validate()" value="<%= q %>"/>
+		<label for="q">Buscar</label>
+	</div>
 </div>
-<div class="col s12">
-        <% for(var i = 0; i < results.length; i++) { %>
 
-            <div class="col s12 search-result" style="margin-bottom: 10px;">
-                <span class="result-date"><%= results[i].publish_date %></span>
-                <br>
-                <% if(results[i].image_urls) { %>
-                <img src="<%=results[i].image_urls[0]%>" class="result-thumb">
-
-               <% } %>
-                <a class="result-title" onclick="showDetail(<%= JSON.stringify(results[i].id) %>)" style="cursor:pointer;">
-                    <% if(results[i].price != 0) { %>
-                        <%= results[i].price %> CUC -
-                    <% } %>
-                    <%= results[i].title %>
-                </a>
-
-                <p class="result-desc"><%= results[i].short_description %></p>
-                <small class="result-url"><%= results[i].site %></small>
-            </div>
-        <% } %>
-    </div>
+<div class="row">
+	<div class="col s12">
+		<% results.forEach(function(item){ %>
+			<div class="col s12 search-result" style="margin-bottom: 10px;">
+				<span class="result-date"><%= item.publishedDate %></span>
+				<br>
+				<% if(item.hasImages) { %>
+					<img src="{{APP_SERVICE_PATH}}/images/img.png" alt="Tiene foto" class="result-thumb">
+				<% } %>
+				<a class="result-title" href="#!" onclick="showDetails('<%= item.id %>','<%= q %>')">
+					<% if(item.price != 0) { %>
+						<%= item.price %> CUC -
+					<% } %>
+					<%= item.title %>
+				</a>
+				<p class="result-desc"><%= item.shortDesc %></p>
+				<small class="result-url"><%= item.site %></small>
+			</div>
+		<% }) %>
+	</div>
+</div>

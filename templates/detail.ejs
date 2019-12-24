@@ -1,9 +1,9 @@
 <div class="row">
 	<div class="col s12" id="article-details">
-		<% if(ad.image_urls) { %>
-		<div id="article-img" class="valign-wrapper">
-			<img class="responsive-img" src="<%=ad.image_urls[0] %>">
-		</div>
+		<% if(ad.image) { %>
+			<div id="article-img" class="valign-wrapper">
+				<img class="responsive-img" src="{{APP_IMAGE_PATH}}<%= ad.image %>" alt="<%= ad.image %>"/>
+			</div>
 		<% } %>
 
 		<div id="article-content">
@@ -12,25 +12,27 @@
 					<%= ad.price %> -
 				<% } %>
 				<%= ad.title %>
-		</span>
-			<br>			
+			</span>
+			<br>
 
-			<p><%= ad.publish_date %></p>
+			<p><%= ad.publishDate %></p>
 			<p><%= ad.description %></p>
 
 			<% if(ad.name) { %>
 				<p class="contact-name"><i class="material-icons amber-text text-darken-1">person</i> <%= ad.name %> </p>
 			<% } %>
+
 			<% if(ad.email) { %>
 				<p class="contact-email"><i class="material-icons blue-text text-accent-4">email</i> <%= ad.email %> </p>
 			<% } %>
+
 			<% if(ad.phone) { %>
 				<p class="contact-phone"><i class="material-icons green-text text-darken-2">phone</i> <%= ad.phone %> </p>
 			<% } %>
 		</div>
 	</div>
 
-	<div class="fixed-action-btn" onclick="apretaste.send({'command': 'REVOLTILLO SEARCH'})">
+	<div class="fixed-action-btn" onclick="searchData('<%= q %>')">
 		<a class="btn-floating btn-large">
 			<i class="large material-icons">arrow_back</i>
 		</a>

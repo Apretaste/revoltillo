@@ -10,62 +10,26 @@ function clickSearch() {
 		sendData();
 	}
 }
-
-
-/*function sendData(){
-
-  var q = document.getElementById('q');
-  var value = q.value;
-
-	if(value.length> 0){
-		apretaste.send({
-			'command':'REVOLTILLO SEARCH',
-			'data':{'q':value},
-			'redirect':true,
-			'callback':{'name':'sendMessageCallback','data':value}
-		});
-	}
-	//else M.toast({html: 'Mínimo 30 caracteres'});
-}*/
-
 function sendData() {
-	var value = document.getElementById('q').value;
+	// get the data to search
+	var q = document.getElementById('q').value;
 
-	// search
+	// start searching
+	searchData(q);
+}
+
+function searchData(q) {
 	apretaste.send({
 		'command': 'REVOLTILLO SEARCH',
-		'data': {'q': value},
+		'data': {'q':q},
 		'redirect': true
 	});
 }
 
-function sendDataUrl(q, page) {
+function showDetails(id, q) {
 	apretaste.send({
-		command: "REVOLTILLO SEARCHURL",
-		'data': {
-			'q': q,
-			'page': page
-		},
+		command: "REVOLTILLO DETAILS",
+		'data': {'id':id, 'q':q},
 		'redirect': true
 	});
 }
-
-function sendDataCategory(q, page) {
-	apretaste.send({
-		command: "REVOLTILLO SEARCHCATEGORY",
-		'data': {
-			'q': q,
-			'page': page
-		},
-		'redirect': true
-	});
-}
-
-function showDetail(id) {
-	apretaste.send({
-		command: "REVOLTILLO SHOWDETAIL",
-		'data': {'id': id},
-		'redirect': true
-	});
-}
-

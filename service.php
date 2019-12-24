@@ -3,285 +3,197 @@
 class Service
 {
 	/**
-	 * Display the list of musics
+	 * Displays box to start a search
 	 *
+	 * @author Daniel
 	 * @param Request
 	 * @param Response
-	 * @author salvipascual
 	 */
 	public function _main(Request $request, Response $response)
 	{
-		$path = Utils::getPathToService('revoltillo');
-		$response->setTemplate("index.ejs", [], ["$path/images/logo.png"]);
-
+		$response->setCache("year");
+		$response->setTemplate("index.ejs", []);
 	}
 
+	/**
+	 * Performs a search
+	 *
+	 * @author Daniel
+	 * @param Request
+	 * @param Response
+	 */
 	public function _search(Request $request, Response $response)
 	{
-		$size = 20;
-		$from = 0;
-		$ads = array();
-
+		// get the query to run
 		$q = $request->input->data->q;
 
+		// get data from tha backend
+		$query = '{"size":"20","from":"0","query":{"match":{"title_keywords":"'.$q.'"}}}';
+		$results = $this->search($query);
 
-		//$params = '{"size":"'.$size.'","from":"'.$from.'","sort":{"created_at":{"order":"desc"}},"query":{"term":{"category":"' .$q. '"}}}';
-
-		$params = '{"size":"' . $size . '","from":"' . $from . '","query":{"match":{"title_keywords":"' . $q . '"}}}';
-
-
-		$data = $this->search($params);
-
-
-		$results = $data['results'];
-		$total = $data['total'];        
-
-
-		$page_count = floor($total / $size);
-
-		if ($page_count > 10) {
-
-			$page_count = 10;
-		}
-
-		foreach($results as $res){
-
-			$id = $res['_source']['external_id'];
-			$publish_date = $res['_source']['publish_date'];
-			$title = html_entity_decode(ucfirst(strtolower($res['_source']['title'])));
-			$description = $res['_source']['description'];
-			$price = $res['_source']['price'];
-			$url = $res['_source']['url'];
-			$image_url = $res['_source']['image_urls'];
-
+		// clean the data to send to the view
+		$ads = [];
+		foreach($results as $res) {
+			$item = $res['_source'];
 			$ads[] = [
-				'id'=>$id,
-				'title' => $title,
-				'short_description' => $this->getShortDesc($description),			
-				'price' => number_format($price),
-				'url' => $url,
-				'site'=>$this->getSiteName($url),
-				'publish_date' =>$this->convertDate($publish_date),				
-				'image_urls' => $image_url
-							
+				'id' => $item['external_id'],
+				'title' => $this->cleanString($item['title']),
+				'shortDesc' => mb_substr($this->cleanString($item['description']), 0, 120),
+				'price' => number_format($item['price']),
+				'site' => $this->getSiteName($item['url']),
+				'publishedDate' =>$this->convertDate($item['publish_date']),
+				'hasImages' => !empty($item['image_urls'])
 			];
-		}	
-		
-		
+		}
 
+		// create content for the view
 		$content = [
 			"q" => $q,
-			"results" => $ads,
-			"page" => 1,
-			"total" => $total,
-			"page_count" => $page_count
+			"results" => $ads
 		];
 
-		// $this->short_url
-
+		// send data to the view
+		$response->setCache("day");
 		$response->setTemplate("search.ejs", $content);
-
 	}
 
-
-	public function _searchurl(Request $request, Response $response)
+	/**
+	 * Get the details for a classied
+	 *
+	 * @author Daniel
+	 * @param Request
+	 * @param Response
+	 */
+	public function _details(Request $request, Response $response)
 	{
-
-		$title = "";
-		$image_url = "";
-		$to = 0;
-		$size = 20;
-		//$pages_count = 10;
-		$q = $request->input->data->q;
-		$page = $request->input->data->page;
-
-		$to = $page * 20;
-
-		if ($to > 20) {
-			$from = $to - 20;
-		} else {
-			$from = 0;
-		}
-
-		// $params = '{"query": {"match": {"title_keywords":"'.$q.'"}},"sort":{"created_at":{"order":"asc"}}}';
-		$params = '{"size":"' . $size . '","from":"' . $from . '","query":{"match":{"title_keywords":"' . $q . '"}}}';
-
-		$data = $this->search($params);
-
-		$results = $data['results'];
-		$total = $data['total'];
-
-		$page_count = floor($total / $size);
-
-		if ($page_count > 10) {
-
-			$page_count = 10;
-		}
-		
-
-		$content = [
-
-			"results" => $results,
-			"page" => $page,
-			"q" => $q,
-			"total" => $total,
-			"page_count" => $page_count
-		];
-
-		// $this->short_url
-
-		$response->setTemplate("search.ejs", $content);
-		//$response->setTemplate("main.ejs",$content);
-
-	}
-
-	public function _searchCategory(Request $request, Response $response)
-	{
-
-		$title = "";
-		$image_url = "";
-		$to = 0;
-		$size = 20;
-		//$pages_count = 10;
-		$q = $request->input->data->q;
-		$page = $request->input->data->page;
-
-		$to = $page * 20;
-
-		if ($to > 20) {
-			$from = $to - 20;
-		} else {
-			$from = 0;
-		}
-
-		// $params = '{"query": {"match": {"title_keywords":"'.$q.'"}},"sort":{"created_at":{"order":"asc"}}}';
-
-		$params = '{"size":"' . $size . '","from":"' . $from . '","query":{"term":{"category":"' . $q . '"}},"sort":{"published_at":{"order":"desc"}}}';
-
-		$data = $this->search($params);
-
-		$results = $data['results'];
-		$total = $data['total'];
-
-		$page_count = floor($total / $size);
-
-		if ($page_count > 10) {
-
-			$page_count = 10;
-		}
-		
-
-		// print_r(count($anuncios));
-
-		$content = [
-			"ads" => $results,
-			"page" => $page,
-			"q" => $q,
-			"total" => $total,
-			"page_count" => $page_count
-		];
-
-		// $this->short_url
-
-		$response->setTemplate("search.ejs", $content);
-		//$response->setTemplate("main.ejs",$content);
-
-	}
-
-	public function _showdetail(Request $request, Response $response){
-
-		$ad = array();
-
+		// get the ID of the classified
 		$id = $request->input->data->id;
+		$q = $request->input->data->q;
 
-        $data = $this->getAdDetailById($id);
+		// search the info based on ID
+		$data = $this->getAdDetailById($id);
+		$result = $data[0]['_source'];
 
-        $result = $data['results'][0]['_source'];
+		// save the first image locally for the view
+		$images = [];
+		if(!empty($result['image_urls'][0])) {
+			// save image file if not in the cache
+			$img = Utils::getTempDir() . md5($result['image_urls'][0]) . ".jpg";
+			if(!file_exists($img)) {
+				file_put_contents($img, file_get_contents($result['image_urls'][0]));
+			}
+			$images[] = $img;
+		}
 
-        $ad = [
-            'title'=>html_entity_decode(ucfirst(strtolower($result['title']))),
-            'description'=> html_entity_decode(ucfirst(strtolower($result['description']))),
-            'price'=>number_format($result['price']),
-            'publish_date' =>$this->convertDate($result['publish_date']),				
-			'image_urls' => $result['image_urls'],
-			'name'=>$result['advertiser_name'],
-			'email'=>$result['advertiser_emails'],
-			'phone'=>$result['advertiser_phones']
-
-        ];
-
-
-
-		$content = [
-               'ad'=>$ad
+		// prepare info for the view
+		$ad = [
+			'title' => $this->cleanString($result['title']),
+			'description' => $this->cleanString($result['description']),
+			'price' => number_format($result['price']),
+			'publishDate' => $this->convertDate($result['publish_date']),
+			'image' => empty($images) ? "" : basename($images[0]),
+			'name' => $result['advertiser_name'],
+			'email' => $result['advertiser_emails'],
+			'phone' => $result['advertiser_phones']
 		];
 
-		$response->setTemplate("detail.ejs", $content);
+		// create content for the view
+		$content = [
+			"q" => $q,
+			"ad" => $ad
+		];
+
+		// send data to the view
+		$response->setCache("year");
+		$response->setTemplate("detail.ejs", $content, $images);
 	}
 
-	private function getAdDetailById($id){
-      
-      $params = '{"query":{"term":{"external_id":"' . $id . '"}}}';
-
-	  $data = $this->search($params);
-
-	  return $data;
-
-	}
-
-	private function getSiteName($url)
+	/**
+	 * Cleans a string so that is can be converted to JSON
+	 *
+	 * @author @salvipascual
+	 * @param String $str
+	 * @return String
+	 */
+	private function cleanString($str)
 	{
-
-		$parse = parse_url($url);		
-
-		return $parse['host'];
-
+		return mb_convert_encoding(
+			html_entity_decode(
+				ucfirst(
+					strtolower($str)
+				)
+			), 'UTF-8', 'UTF-8'
+		);
 	}
 
+	/**
+	 * Formats a date to be sent back
+	 *
+	 * @author Daniel
+	 * @param String $date
+	 * @return String
+	 */
 	private function convertDate($date)
 	{
-
 		date_default_timezone_set('America/Havana');
-
 		return date('d M, Y', $date);
-
 	}
 
-	private function getShortDesc($description){
-
-		return html_entity_decode(ucfirst(strtolower(mb_substr($description, 0, 120))));
+	/**
+	 * Get a classified based on the ID
+	 *
+	 * @author Daniel
+	 * @param Int $str
+	 * @return Array
+	 */
+	private function getAdDetailById($id)
+	{
+		$params = '{"query":{"term":{"external_id":"'.$id.'"}}}';
+		return $this->search($params);
 	}
 
+	/**
+	 * Get the name of the site based on a URL
+	 *
+	 * @author Daniel
+	 * @param String $url
+	 * @return String
+	 */
+	private function getSiteName($url)
+	{
+		$parse = parse_url($url);
+		return $parse['host'];
+	}
+
+	/**
+	 * Perform a search in Elastic Search
+	 *
+	 * @author Daniel
+	 * @param JSON $params
+	 * @return Array
+	 */
 	private function search($params)
 	{
+		// get content from cache
+		$cache = Utils::getTempDir() . "cache/revoltillo_" . md5($params) . date("Ym") . ".cache";
+		if(file_exists($cache)) return unserialize(file_get_contents($cache));
 
-		$header = array(
-			"content-type: application/json"
-		);
-
+		// send request via CURL
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, "http://167.99.147.172:9200/ads/_search");
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, ["content-type: application/json"]);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
 		$result = curl_exec($curl);
 		curl_close($curl);
 
+		// get results
 		$results = json_decode($result, true);
-		$total = $results['hits']['total'];
-		$results = $results['hits']['hits'];
+		$content = $results['hits']['hits'];
 
-		$data = [
-			'results' => $results,
-			'total' => $total
-
-		];
-
-		return $data;
-
+		// create the cache and return
+		file_put_contents($cache, serialize($content));
+		return $content;
 	}
-
-	
-
 }
