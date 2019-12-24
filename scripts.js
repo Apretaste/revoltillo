@@ -19,6 +19,13 @@ function sendData() {
 }
 
 function searchData(q) {
+	// do not let small string pass
+	if(q.length < 5) {
+		M.toast({html: 'Mínimo 5 letras'});
+		return false;
+	}
+
+	// send the request
 	apretaste.send({
 		'command': 'REVOLTILLO SEARCH',
 		'data': {'q':q},
