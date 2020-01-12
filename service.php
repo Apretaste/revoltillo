@@ -148,7 +148,7 @@ class Service
 	 */
 	private function getAdDetailById($id)
 	{
-		$params = '{"query":{"term":{"external_id":"'.$id.'"}}}';
+		$params = '{"query":{"match":{"external_id":"'.$id.'"}}}';
 		return $this->search($params);
 	}
 
