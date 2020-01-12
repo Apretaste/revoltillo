@@ -35,11 +35,14 @@ class Service
 		$ads = [];
 		foreach($results as $res) {
 			$item = $res['_source'];
+			$item['price'] = str_replace(',','.', $item['price']);
+			$price = $item['price'] * 1;
+
 			$ads[] = [
 				'id' => $item['external_id'],
 				'title' => $this->cleanString($item['title']),
 				'shortDesc' => mb_substr($this->cleanString($item['description']), 0, 120),
-				'price' => number_format($item['price'] * 1),
+				'price' => number_format($price,2),
 				'site' => $this->getSiteName($item['url']),
 				'publishedDate' =>$this->convertDate($item['publish_date']),
 				'hasImages' => !empty($item['image_urls'])
