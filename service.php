@@ -104,7 +104,7 @@ class Service
 		// prepare info for the view
 		$ad = [
 			'title' => $this->cleanString($result->title),
-			'description' => $this->cleanString($result->description),
+			'description' => $this->cleanString($result->description ?? ''),
 			'price' => number_format($result->price),
 			'publishDate' => $this->convertDate($result->created_at),
 			'image' => empty($images) ? "" : basename($images[0]),
