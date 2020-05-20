@@ -1,40 +1,47 @@
 <div class="row">
-	<div class="col s12" id="article-details">
-		<% if(ad.image) { %>
-			<div id="article-img" class="valign-wrapper">
-				<img class="responsive-img" src="{{APP_IMAGE_PATH}}<%= ad.image %>" alt="<%= ad.image %>"/>
-			</div>
-		<% } %>
+    <div class="col s12" id="article-details">
+        <% if(ad.image) { %>
+            <div id="article-img" class="valign-wrapper">
+                <img class="responsive-img" src="{{APP_IMAGE_PATH}}<%= ad.image %>" alt="<%= ad.image %>"/>
+            </div>
+        <% } %>
 
-		<div id="article-content">
+        <div id="article-content">
 			<span class="result-title">
-				<% if(ad.price != 0) { %>
-					<%= ad.price %> -
-				<% } %>
-				<%= ad.title %>
+                <% if(ad.price != 0) { %>
+                    <%= ad.price %> -
+                <% } %>
+                <%= ad.title %>
 			</span>
-			<br>
+            <br>
 
-			<p><%= ad.publishDate %></p>
-			<p><%= ad.description %></p>
+            <p><%= ad.publishDate %></p>
+            <p><%- ad.description %></p>
 
-			<% if(ad.name) { %>
-				<p class="contact-name"><i class="material-icons amber-text text-darken-1">person</i> <%= ad.name %> </p>
-			<% } %>
+            <% if(ad.name) { %>
+                <p class="contact-name"><i class="material-icons amber-text text-darken-1">person</i> <%= ad.name %>
+                </p>
+            <% } %>
 
-			<% if(ad.email) { %>
-				<p class="contact-email"><i class="material-icons blue-text text-accent-4">email</i> <%= ad.email %> </p>
-			<% } %>
+            <% ad.email.forEach(function(email) { %>
+                <div class="col valign-wrapper" style="margin: .75rem 0; padding-left: 0;">
+                    <i class="material-icons blue-text text-accent-4">email</i> <span><%= email %></span>
+                </div>
+            <% }) %>
 
-			<% if(ad.phone) { %>
-				<p class="contact-phone"><i class="material-icons green-text text-darken-2">phone</i> <%= ad.phone %> </p>
-			<% } %>
-		</div>
-	</div>
+            <% ad.phone.forEach(function(phone) { %>
+                <% if(phone){ %>
+                    <div class="col valign-wrapper" style="margin: .75rem 0; padding-left: 0;">
+                        <i class="material-icons green-text text-darken-2">phone</i><span><%= phone %></span>
+                    </div>
+                <% } %>
+            <% }) %>
+        </div>
+    </div>
 
-	<div class="fixed-action-btn" onclick="searchData('<%= q %>')">
-		<a class="btn-floating btn-large">
-			<i class="large material-icons">arrow_back</i>
-		</a>
-	</div>
+    <div class="fixed-action-btn" onclick="searchData('<%= q %>')">
+        <a class="btn-floating btn-large">
+            <i class="large material-icons">arrow_back</i>
+        </a>
+    </div>
 </div>

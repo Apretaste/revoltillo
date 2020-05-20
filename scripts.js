@@ -20,8 +20,8 @@ function sendData() {
 
 function searchData(q) {
 	// do not let small string pass
-	if(q.length < 5) {
-		M.toast({html: 'Mínimo 5 letras'});
+	if(q.length < 3) {
+		M.toast({html: 'Mínimo 3 letras'});
 		return false;
 	}
 

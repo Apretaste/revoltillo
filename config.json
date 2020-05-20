@@ -1,10 +1,9 @@
 {
 	"name": "revoltillo",
 	"caption": "Revoltillo",
-	"version": "1",
 	"description": "El famoso agregador de anuncios clasificados en Cuba",
 	"category": "otros",
 	"creator": "revoltillocu@gmail.com",
 	"listed": true,
-	"guest": true,
+	"guest": true
 }
