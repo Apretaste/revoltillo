@@ -15,7 +15,7 @@
 			</span>
             <br>
 
-            <p><%= ad.publishDate %></p>
+            <p><%= moment(ad.publishDate).format('LLLL') %></p>
             <p><%- ad.description %></p>
 
             <% if(ad.name) { %>

@@ -10,7 +10,7 @@
 	<div class="col s12">
 		<% results.forEach(function(item){ %>
 			<div class="col s12 search-result" style="margin-bottom: 10px;">
-				<span class="result-date"><%= item.publishedDate %></span>
+				<span class="result-date"><%= moment(item.publishedDate).format('LLLL') %></span>
 				<br>
 				<% if(item.hasImages) { %>
 					<img src="{{APP_SERVICE_PATH}}/images/img.png" alt="Tiene foto" class="result-thumb">

@@ -56,9 +56,19 @@ class Service
 				'shortDesc' => mb_substr($this->cleanString($item->description ?? ""), 0, 120),
 				'price' => number_format($price, 2),
 				'site' => $this->getSiteName($item->url),
-				'publishedDate' => $this->convertDate($item->created_at),
+				'publishedDate' => $item->created_at,
 				'hasImages' => !empty($item->image_urls)
 			];
+		}
+
+		if (empty($ads)) {
+			$response->setTemplate("message.ejs", [
+				'header' => 'Lo sentimos', 'icon' => 'error_outline',
+				'text' => 'No tenemos resultados para esta busqueda',
+				'button' => ['caption' => 'Atras', 'href' => 'REVOLTILLO']
+			]);
+
+			return;
 		}
 
 		// create content for the view
@@ -88,6 +98,18 @@ class Service
 
 		// search the info based on ID
 		$data = Revoltillo::searchById($id);
+
+		if (!isset($data->_source)) {
+			$response->setTemplate("message.ejs", [
+				'header' => 'Lo sentimos', 'icon' => 'error_outline',
+				'text' => 'El articulo que busca no pudo ser encontrado',
+				'button' => ['caption' => 'Atras', 'href' => 'REVOLTILLO BUSCAR'],
+				'query' => $q
+			]);
+
+			return;
+		}
+
 		$result = $data->_source;
 
 		// save the first image locally for the view
@@ -106,7 +128,7 @@ class Service
 			'title' => $this->cleanString($result->title),
 			'description' => $this->cleanString($result->description ?? ''),
 			'price' => number_format($result->price),
-			'publishDate' => $this->convertDate($result->created_at),
+			'publishDate' => $result->created_at,
 			'image' => empty($images) ? "" : basename($images[0]),
 			'name' => $result->advertiser_name ?? false,
 			'email' => $result->advertiser_emails ?? [],
@@ -157,20 +179,6 @@ class Service
 	}
 
 	/**
-	 * Get a classified based on the ID
-	 *
-	 * @param $id
-	 * @return array
-	 * @throws Alert
-	 * @author Daniel
-	 */
-	private function getAdDetailById($id)
-	{
-		$params = '{"query":{"match":{"external_id":"' . $id . '"}}}';
-		return $this->search($params);
-	}
-
-	/**
 	 * Get the name of the site based on a URL
 	 *
 	 * @param String $url
@@ -181,64 +189,5 @@ class Service
 	{
 		$parse = parse_url($url);
 		return $parse['host'];
-	}
-
-	/**
-	 * Perform a search in Elastic Search
-	 *
-	 * @param string $params
-	 * @return array
-	 * @author Daniel
-	 */
-	private function search($params)
-	{
-		// get content from cache
-		$cache = TEMP_PATH . "cache/revoltillo_" . md5($params) . date("Ym") . ".cache";
-		if (file_exists($cache)) return unserialize(file_get_contents($cache));
-
-		$key = Config::pick('revoltillo')['api_key'];
-		$key = base64_decode($key);
-
-		// send request via CURL
-		$curl = curl_init();
-
-		curl_setopt_array($curl, array(
-			// Request URL containing app, type and id or method
-			CURLOPT_URL => "https://arc-cluster-revoltillo-cluster-bpexkh.searchbase.io/{{app}}/{{type}}/{{id/method}}",
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_ENCODING => "",
-			CURLOPT_MAXREDIRS => 10,
-			CURLOPT_TIMEOUT => 30,
-			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			// Request HTTP method ( GET | POST | PUT | DELETE )
-			CURLOPT_CUSTOMREQUEST => "POST",
-			// Request body/payload
-			CURLOPT_POSTFIELDS => $params,
-			CURLOPT_HTTPHEADER => array(
-				// App credentials base64 encoded
-				"Authorization: Basic $key",
-				"Content-Type: application/json"
-			),
-		));
-
-		$response = curl_exec($curl);
-		die(var_dump($response));
-
-
-		curl_setopt($curl, CURLOPT_URL, "http://167.99.147.172:9200/ads/_search");
-		curl_setopt($curl, CURLOPT_HTTPHEADER, ["content-type: application/json"]);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-		curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
-		$result = curl_exec($curl);
-		curl_close($curl);
-
-		// get results
-		$results = json_decode($result, true);
-		$content = $results['hits']['hits'];
-
-		// create the cache and return
-		file_put_contents($cache, serialize($content));
-		return $content;
 	}
 }
