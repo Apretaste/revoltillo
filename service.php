@@ -34,7 +34,17 @@ class Service
 	public function _search(Request $request, Response $response)
 	{
 		// get the query to run
-		$query = $request->input->data->q;
+		$query = $request->input->data->q ?? false;
+
+		if (!$query) {
+			$response->setTemplate("message.ejs", [
+				'header' => 'Lo sentimos', 'icon' => 'error_outline',
+				'text' => 'Su busqueda esta vacía',
+				'button' => ['caption' => 'Inicio', 'href' => 'REVOLTILLO']
+			]);
+
+			return;
+		}
 
 		$isCategory = in_array($query, ['casas', 'autos', 'electronica', 'servicios', 'ventas', 'empleos']);
 
