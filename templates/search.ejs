@@ -1,6 +1,6 @@
-<div class="row">
+<div class="row" style="margin-bottom: 0">
 	<div class="col input-field outline search-field">
-		<i class="material-icons" onclick="sendData()">search</i>
+		<i class="material-icons" onclick="sendData()">send</i>
 		<input id="q" type="text" class="search-input" value="<%= q %>"/>
 		<label for="q">Buscar</label>
 	</div>
@@ -10,7 +10,7 @@
 	<div class="col s12">
 		<% results.forEach(function(item){ %>
 			<div class="col s12 search-result" style="margin-bottom: 10px;">
-				<span class="result-date"><%= moment(item.publishedDate).format('LLLL') %></span>
+				<span class="result-date"><%= moment(item.publishedDate).format('D [de] MMMM, YYYY h:mm A') %></span>
 				<br>
 				<% if(item.hasImages) { %>
 					<img src="{{APP_SERVICE_PATH}}/images/img.png" alt="Tiene foto" class="result-thumb">

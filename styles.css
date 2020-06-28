@@ -12,12 +12,12 @@
     width: calc(100% - 2.5rem) !important;
 }
 
-.search-field label, .search-field input{
+.search-field label, .search-field input {
     font-size: 18px;
     margin: 0 !important;
 }
 
-.search-field label:not(.active){
+.search-field label:not(.active) {
     top: -4px !important;
 }
 
@@ -156,4 +156,41 @@
     transform: translateY(-10px) scale(0.8);
     padding: 0 8px;
     background: white;
+}
+
+
+/* TAGS */
+
+.chip .icon {
+    float: left;
+    font-size: 16px;
+    line-height: 32px;
+    padding-right: 5px;
+}
+
+.chip.tiny {
+    height: 20px;
+    padding: 0 10px;
+    line-height: 20px;
+    font-size: x-small;
+}
+
+.chip.tiny .icon {
+    line-height: 20px;
+}
+
+/* HOME SCREEN */
+
+.home img {
+    margin: 30% 0px 20px 0px;
+}
+
+.home .tags, .menu {
+    margin-top: 50px;
+}
+
+/* ONE LINE COLLECTION */
+
+.collection.one-line .avatar {
+    min-height: 0px;
 }

@@ -1,42 +1,51 @@
 <div class="row">
-    <div class="col s12" id="article-details">
+    <div class="col s12" style="margin-bottom: 1rem">
+        <h3>
+            <% if(ad.price != 0) { %>
+                <%= ad.price %> CUC -
+            <% } %>
+            <%= ad.title %>
+        </h3>
+
         <% if(ad.image) { %>
-            <div id="article-img" class="valign-wrapper">
-                <img class="responsive-img" src="{{APP_IMAGE_PATH}}<%= ad.image %>" alt="<%= ad.image %>"/>
-            </div>
+            <img class="responsive-img" src="{{APP_IMAGE_PATH}}<%= ad.image %>" alt="<%= ad.image %>"/>
         <% } %>
 
-        <div id="article-content">
-			<span class="result-title">
-                <% if(ad.price != 0) { %>
-                    <%= ad.price %> -
-                <% } %>
-                <%= ad.title %>
-			</span>
-            <br>
+        <p><%- ad.description %></p>
 
-            <p><%= moment(ad.publishDate).format('LLLL') %></p>
-            <p><%- ad.description %></p>
+        <ul class="collection one-line">
+            <li class="collection-item avatar">
+                <i class="far fa-newspaper circle"></i>
+                <span class="title"><%= moment(ad.publishDate).format('D [de] MMMM, YYYY h:mm A') %></span>
+                <p class="blue-grey-text">Fecha de publicación</p>
+            </li>
 
             <% if(ad.name) { %>
-                <p class="contact-name"><i class="material-icons amber-text text-darken-1">person</i> <%= ad.name %>
-                </p>
+                <li class="collection-item avatar">
+                    <i class="tiny material-icons circle">person</i>
+                    <span class="title"><%= ad.name %></span>
+                    <p class="blue-grey-text">Autor</p>
+                </li>
             <% } %>
 
             <% ad.email.forEach(function(email) { %>
-                <div class="col valign-wrapper" style="margin: .75rem 0; padding-left: 0;">
-                    <i class="material-icons blue-text text-accent-4">email</i> <span><%= email %></span>
-                </div>
+                <li class="collection-item avatar">
+                    <i class="tiny material-icons circle">email</i>
+                    <span class="title"><%= email %></span>
+                    <p class="blue-grey-text">Email</p>
+                </li>
             <% }) %>
 
             <% ad.phone.forEach(function(phone) { %>
                 <% if(phone){ %>
-                    <div class="col valign-wrapper" style="margin: .75rem 0; padding-left: 0;">
-                        <i class="material-icons green-text text-darken-2">phone</i><span><%= phone %></span>
-                    </div>
+                    <li class="collection-item avatar">
+                        <i class="tiny material-icons circle">phone</i>
+                        <span class="title"><%= phone %></span>
+                        <p class="blue-grey-text">Número</p>
+                    </li>
                 <% } %>
             <% }) %>
-        </div>
+        </ul>
     </div>
 
     <div class="fixed-action-btn" onclick="searchData('<%= q %>')">

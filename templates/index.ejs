@@ -1,45 +1,45 @@
-<div class="row">
-	<div class="col s12 center-align">
-		<img src="{{APP_SERVICE_PATH}}/images/logo.png" alt="Revoltillo" class="img-responsive">
-		<h6 style="color: #4d4d4d">Buscador de anuncios clasificados en Cuba</h6>
-	</div>
+<div class="row home">
+    <div class="col s12 center-align">
+        <img src="{{APP_SERVICE_PATH}}/images/logo.png" alt="Revoltillo" class="img-responsive">
+    </div>
 
-	<div class="col input-field outline search-field">
-		<i class="material-icons" onclick="sendData()">search</i>
-		<input id="q" type="text" class="search-input" onkeyup="clickSearch()"/>
-		<label for="q">Buscar</label>
-	</div>
+    <div class="input-field col s12">
+        <input id="q" type="text" onkeyup="clickSearch()"/>
+        <label for="q">¿Qué desea buscar?</label>
+    </div>
 
-	<div class="col s12 categories">
-		<a class="col s2" href="#!" onclick="searchData('casas')">
-			<i class="material-icons amber darken-1">home</i>
-			<br>
-			<small>Casas</small>
-		</a>
-		<a class="col s2" href="#!" onclick="searchData('autos')">
-			<i class="material-icons blue accent-4">directions_car</i>
-			<br>
-			<small>Autos</small>
-		</a>
-		<a class="col s2" href="#!" onclick="searchData('electronica')">
-			<i class="material-icons red darken-3">tv</i>
-			<br>
-			<small>Electronica</small>
-		</a>
-		<a class="col s2" href="#!" onclick="searchData('servicios')">
-			<i class="material-icons amber darken-1">view_list</i>
-			<br>
-			<small>Servicios</small>
-		</a>
-		<a class="col s2" href="#!" onclick="searchData('ventas')">
-			<i class="material-icons green darken-2">trending_up</i>
-			<br>
-			<small>Ventas</small>
-		</a>
-		<a class="col s2" href="#!" onclick="searchData('empleos')">
-			<i class="material-icons blue accent-4">business_center</i>
-			<br>
-			<small>Empleos</small>
-		</a>
-	</div>
+    <div class="tags center-align">
+        <span class="chip amber darken-1 white-text" onclick="searchData('casas')">
+            <i class="material-icons icon">home</i>
+            Casas
+        </span>
+        <span class="chip blue accent-4 white-text" onclick="searchData('autos')">
+            <i class="material-icons icon">directions_car</i>
+            Autos
+        </span>
+        <span class="chip red darken-3 white-text" onclick="searchData('electronica')">
+            <i class="material-icons icon">tv</i>
+            Electronica
+        </span>
+        <span class="chip amber darken-1 white-text" onclick="searchData('servicios')">
+            <i class="material-icons icon">view_list</i>
+            Servicios
+        </span>
+        <span class="chip green darken-2 white-text" onclick="searchData('ventas')">
+            <i class="material-icons icon">trending_up</i>
+            Ventas
+        </span>
+        <span class="chip blue accent-4 white-text" onclick="searchData('empleos')">
+            <i class="material-icons icon">business_center</i>
+            Empleos
+        </span>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large waves-effect waves-light green" href="#!" onclick="sendData()">
+            <i class="material-icons">send</i>
+        </a>
+    </div>
+
 </div>
