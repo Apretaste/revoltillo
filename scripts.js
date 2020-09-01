@@ -52,7 +52,7 @@ function share(id, price, title) {
 			link: {
 				command: btoa(JSON.stringify({
 					command: 'REVOLTILLO DETAILS',
-					data: {'id':id}
+					data: {'id':id, 'q':''}
 				})),
 				icon: 'store',
 				text: createShareText(price, title)
