@@ -147,6 +147,7 @@ class Service
 			'publishDate' => $result->created_at,
 			'image' => empty($images) ? "" : basename($images[0]),
 			'name' => $result->advertiser_name ?? false,
+			'site' => $this->getSiteName($result->url),
 			'email' => $result->advertiser_emails ?? [],
 			'phone' => $result->advertiser_phones ?? []
 		];
