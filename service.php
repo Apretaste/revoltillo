@@ -1,5 +1,4 @@
 <?php
-/** @noinspection PhpComposerExtensionStubsInspection */
 
 use Apretaste\Request;
 use Apretaste\Response;
@@ -37,19 +36,27 @@ class Service
 		$query = $request->input->data->q ?? false;
 
 		if (!$query) {
-			$response->setTemplate("message.ejs", [
-				'header' => 'Lo sentimos', 'icon' => 'error_outline',
-				'text' => 'Su busqueda esta vacía',
+			return $response->setTemplate("message.ejs", [
+				'header' => 'Lo sentimos', 
+				'icon' => 'error_outline',
+				'text' => 'Su búsqueda esta vacía',
 				'button' => ['caption' => 'Inicio', 'href' => 'REVOLTILLO']
 			]);
-
-			return;
 		}
 
 		$isCategory = in_array($query, ['casas', 'autos', 'electronica', 'servicios', 'ventas', 'empleos']);
 
 		// get data from the backend
-		$results = $isCategory ? Revoltillo::searchByCategory($query) : Revoltillo::searchByKeyword($query);
+		try {
+			$results = $isCategory ? Revoltillo::searchByCategory($query) : Revoltillo::searchByKeyword($query);
+		} catch (Exception $e) {
+			return $response->setTemplate("message.ejs", [
+				'header' => 'Error conectando a Revoltillo', 
+				'icon' => 'error_outline',
+				'text' => 'Hemos tenido un error conectandonos a Revoltillo. Probablemente es algo temporal, porque su servidor está ocupado. Vuelva a intentar, y si el problema persiste trate en una hora.',
+				'button' => ['caption' => 'Inicio', 'href' => 'REVOLTILLO']
+			]);
+		}
 
 		// clean the data to send to the view
 		$ads = [];
@@ -72,13 +79,12 @@ class Service
 		}
 
 		if (empty($ads)) {
-			$response->setTemplate("message.ejs", [
-				'header' => 'Lo sentimos', 'icon' => 'error_outline',
-				'text' => 'No tenemos resultados para esta busqueda',
-				'button' => ['caption' => 'Atras', 'href' => 'REVOLTILLO']
+			return $response->setTemplate("message.ejs", [
+				'header' => 'Lo sentimos', 
+				'icon' => 'error_outline',
+				'text' => 'No tenemos resultados para esta búsqueda',
+				'button' => ['caption' => 'Atrás', 'href' => 'REVOLTILLO']
 			]);
-
-			return;
 		}
 
 		// create content for the view
@@ -110,14 +116,13 @@ class Service
 		$data = Revoltillo::searchById($id);
 
 		if (!isset($data->_source)) {
-			$response->setTemplate("message.ejs", [
-				'header' => 'Lo sentimos', 'icon' => 'error_outline',
-				'text' => 'El articulo que busca no pudo ser encontrado',
-				'button' => ['caption' => 'Atras', 'href' => 'REVOLTILLO BUSCAR'],
+			return $response->setTemplate("message.ejs", [
+				'header' => 'Lo sentimos', 
+				'icon' => 'error_outline',
+				'text' => 'El artículo que busca no pudo ser encontrado',
+				'button' => ['caption' => 'Atrás', 'href' => 'REVOLTILLO BUSCAR'],
 				'query' => $q
 			]);
-
-			return;
 		}
 
 		$result = $data->_source;
@@ -135,25 +140,21 @@ class Service
 
 		// prepare info for the view
 		$ad = [
+			'id' => $id,
 			'title' => $this->cleanString($result->title),
 			'description' => $this->cleanString($result->description ?? ''),
 			'price' => number_format($result->price),
 			'publishDate' => $result->created_at,
 			'image' => empty($images) ? "" : basename($images[0]),
 			'name' => $result->advertiser_name ?? false,
+			'site' => $this->getSiteName($result->url),
 			'email' => $result->advertiser_emails ?? [],
 			'phone' => $result->advertiser_phones ?? []
 		];
 
-		// create content for the view
-		$content = [
-			"q" => $q,
-			"ad" => $ad
-		];
-
 		// send data to the view
 		$response->setCache("year");
-		$response->setTemplate("detail.ejs", $content, $images);
+		$response->setTemplate("detail.ejs", ["q" => $q, "ad" => $ad], $images);
 	}
 
 	/**
@@ -165,27 +166,7 @@ class Service
 	 */
 	private function cleanString($str)
 	{
-		return mb_convert_encoding(
-			html_entity_decode(
-				ucfirst(
-					strtolower($str)
-				)
-			), 'UTF-8', 'UTF-8'
-		);
-	}
-
-	/**
-	 * Formats a date to be sent back
-	 *
-	 * @param String $date
-	 * @return String
-	 * @author Daniel
-	 */
-	private function convertDate($date)
-	{
-		date_default_timezone_set('America/Havana');
-		$date = strtotime($date);
-		return date('d M, Y', $date);
+		return mb_convert_encoding(html_entity_decode(ucfirst(strtolower($str))), 'UTF-8', 'UTF-8');
 	}
 
 	/**
@@ -198,6 +179,6 @@ class Service
 	private function getSiteName($url)
 	{
 		$parse = parse_url($url);
-		return $parse['host'];
+		return str_replace('www.', '', $parse['host']);
 	}
 }

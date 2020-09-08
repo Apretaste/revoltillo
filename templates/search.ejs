@@ -1,29 +1,45 @@
-<div class="row" style="margin-bottom: 0">
-	<div class="col input-field outline search-field">
-		<i class="material-icons" onclick="sendData()">send</i>
-		<input id="q" type="text" class="search-input" value="<%= q %>"/>
-		<label for="q">Buscar</label>
-	</div>
+<div class="input-field outline search-field">
+	<i class="material-icons" onclick="sendData()">send</i>
+	<input id="q" type="text" class="search-input" onkeypress="clickSearch()" value="<%= q %>"/>
+	<label for="q">Buscar</label>
 </div>
 
 <div class="row">
 	<div class="col s12">
 		<% results.forEach(function(item){ %>
-			<div class="col s12 search-result" style="margin-bottom: 10px;">
-				<span class="result-date"><%= moment(item.publishedDate).format('D [de] MMMM, YYYY h:mm A') %></span>
-				<br>
-				<% if(item.hasImages) { %>
-					<img src="{{APP_SERVICE_PATH}}/images/img.png" alt="Tiene foto" class="result-thumb">
-				<% } %>
-				<a class="result-title" href="#!" onclick="showDetails('<%= item.id %>','<%= q %>')">
-					<% if(item.price != 0) { %>
-						<%= item.price %> CUC -
+			<div class="card">
+				<div class="card-content">
+					<span class="card-title grey-text text-darken-4 large-text"><%= item.title %></span>
+
+					<% if(item.hasImages) { %>
+						<span class="chip tiny"><i class="far fa-image"></i> Fotos</span>
 					<% } %>
-					<%= item.title %>
-				</a>
-				<p class="result-desc"><%= item.shortDesc %></p>
-				<small class="result-url"><%= item.site %></small>
+
+					<% if(item.price != 0) { %>
+						<span class="chip tiny"><i class="fas fa-dollar-sign"></i> <%= item.price %> CUC</span>
+					<% } %>
+
+					<span class="chip tiny"><i class="fas fa-globe"></i> <%= item.site %></span>
+
+					<span class="chip tiny"><i class="far fa-calendar"></i> <%= moment(item.publishedDate).format('D [de] MMMM, YYYY h:mm A') %></span>
+
+					<% if(item.shortDesc.length > 5) { %>
+						<p class="blue-grey-text large-text"><%= item.shortDesc %></p>
+					<% } %>
+				</div>
+				<div class="card-action grey lighten-4">
+					<a class="green-text" href="#!" onclick="showDetails('<%= item.id %>','<%= q %>')">Ver más</a>
+				</div>
 			</div>
 		<% }) %>
 	</div>
+</div>
+
+<div class="bottom-space"></div>
+
+<!-- BUTTONS -->
+<div id="btn" class="fixed-action-btn">
+	<a class="btn-floating btn-large waves-effect waves-light green" href="#!" onclick="apretaste.send({'command':'REVOLTILLO'})">
+		<i class="material-icons">arrow_back</i>
+	</a>
 </div>

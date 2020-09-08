@@ -1,8 +1,5 @@
-$(document).ready(function(){
-	$('.fixed-action-btn').floatingActionButton({
-		direction: 'left',
-		hoverEnabled: false
-	});
+$(document).ready(function() {
+	$('.modal').modal();
 });
 
 function clickSearch() {
@@ -10,12 +7,10 @@ function clickSearch() {
 		sendData();
 	}
 }
-function sendData() {
-	// get the data to search
-	var q = document.getElementById('q').value;
 
+function sendData() {
 	// start searching
-	searchData(q);
+	searchData($('#q').val());
 }
 
 function searchData(q) {
@@ -28,7 +23,7 @@ function searchData(q) {
 	// send the request
 	apretaste.send({
 		'command': 'REVOLTILLO SEARCH',
-		'data': {'q':q},
+		'data': {'q': q},
 		'redirect': true
 	});
 }
@@ -39,4 +34,31 @@ function showDetails(id, q) {
 		'data': {'id':id, 'q':q},
 		'redirect': true
 	});
+}
+
+function createShareText(price, title) {
+	var newPrice = price ? '[' + price + ' CUC] ' : '';
+	var newTitle = title.length > 40 ? title.substring(0, 40) + '...' : title;
+	return newPrice + newTitle;
+}
+
+function share(id, price, title) {
+	apretaste.send({
+		command: 'PIZARRA PUBLICAR',
+		redirect: false,
+		data: {
+			text: $('#message').val(),
+			image: '',
+			link: {
+				command: btoa(JSON.stringify({
+					command: 'REVOLTILLO DETAILS',
+					data: {'id':id, 'q':''}
+				})),
+				icon: 'store',
+				text: createShareText(price, title)
+			}
+		}
+	});
+
+	M.toast({html: 'Tu artículo fue compartido'});
 }

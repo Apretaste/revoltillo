@@ -1,56 +1,93 @@
 <div class="row">
-    <div class="col s12" style="margin-bottom: 1rem">
-        <h3>
-            <% if(ad.price != 0) { %>
-                <%= ad.price %> CUC -
-            <% } %>
-            <%= ad.title %>
-        </h3>
+	<div class="col s12" style="margin-bottom: 1rem">
+		<h1 class="large-text"><%= ad.title %></h1>
 
-        <% if(ad.image) { %>
-            <img class="responsive-img" src="{{APP_IMAGE_PATH}}<%= ad.image %>" alt="<%= ad.image %>"/>
-        <% } %>
+		<% if(ad.image) { %>
+			<img class="responsive-img" src="{{APP_IMAGE_PATH}}<%= ad.image %>" alt="<%= ad.image %>"/>
+		<% } %>
 
-        <p><%- ad.description %></p>
+		<p class="large-text"><%- ad.description %></p>
 
-        <ul class="collection one-line">
-            <li class="collection-item avatar">
-                <i class="far fa-newspaper circle"></i>
-                <span class="title"><%= moment(ad.publishDate).format('D [de] MMMM, YYYY h:mm A') %></span>
-                <p class="blue-grey-text">Fecha de publicación</p>
-            </li>
+		<ul class="collection one-line">
+			<li class="collection-item avatar">
+				<i class="far fa-newspaper circle"></i>
+				<span class="title"><%= moment(ad.publishDate).format('D [de] MMMM, YYYY h:mm A') %></span>
+				<p class="blue-grey-text">Fecha de publicación</p>
+			</li>
 
-            <% if(ad.name) { %>
-                <li class="collection-item avatar">
-                    <i class="tiny material-icons circle">person</i>
-                    <span class="title"><%= ad.name %></span>
-                    <p class="blue-grey-text">Autor</p>
-                </li>
-            <% } %>
+			<% if(ad.price != 0) { %>
+				<li class="collection-item avatar">
+					<i class="fas fa-dollar-sign circle"></i>
+					<span class="title"><%= ad.price %> CUC</span>
+					<p class="blue-grey-text">Precio propuesto</p>
+				</li>
+			<% } %>
 
-            <% ad.email.forEach(function(email) { %>
-                <li class="collection-item avatar">
-                    <i class="tiny material-icons circle">email</i>
-                    <span class="title"><%= email %></span>
-                    <p class="blue-grey-text">Email</p>
-                </li>
-            <% }) %>
+			<% if(ad.name) { %>
+				<li class="collection-item avatar">
+					<i class="tiny material-icons circle">person</i>
+					<span class="title"><%= ad.name %></span>
+					<p class="blue-grey-text">Autor</p>
+				</li>
+			<% } %>
 
-            <% ad.phone.forEach(function(phone) { %>
-                <% if(phone){ %>
-                    <li class="collection-item avatar">
-                        <i class="tiny material-icons circle">phone</i>
-                        <span class="title"><%= phone %></span>
-                        <p class="blue-grey-text">Número</p>
-                    </li>
-                <% } %>
-            <% }) %>
-        </ul>
-    </div>
+			<% if(ad.site) { %>
+				<li class="collection-item avatar">
+					<i class="fas fa-globe circle"></i>
+					<span class="title"><%= ad.site %></span>
+					<p class="blue-grey-text">Fuente de datos</p>
+				</li>
+			<% } %>
 
-    <div class="fixed-action-btn" onclick="searchData('<%= q %>')">
-        <a class="btn-floating btn-large">
-            <i class="large material-icons">arrow_back</i>
-        </a>
-    </div>
+			<% ad.email.forEach(function(email) { %>
+				<li class="collection-item avatar">
+					<i class="tiny material-icons circle">email</i>
+					<span class="title"><a href="mailto:<%= email %>"><%= email %></a></span>
+					<p class="blue-grey-text">Email</p>
+				</li>
+			<% }) %>
+
+			<% ad.phone.forEach(function(phone) { %>
+				<% if(phone){ %>
+					<li class="collection-item avatar">
+						<i class="tiny material-icons circle">phone</i>
+						<span class="title"><%= phone %></span>
+						<p class="blue-grey-text">Teléfono</p>
+					</li>
+				<% } %>
+			<% }) %>
+		</ul>
+	</div>
+</div>
+
+<div class="bottom-space"></div>
+
+<!-- BUTTONS -->
+<div id="btn" class="fixed-action-btn">
+	<a class="btn-floating waves-effect waves-light grey second modal-trigger" href="#shareModal">
+		<i class="material-icons">share</i>
+	</a>
+	<a class="btn-floating btn-large waves-effect waves-light green" href="#!" onclick="apretaste.back()">
+		<i class="material-icons">arrow_back</i>
+	</a>
+</div>
+
+<!-- SHARE MODAL -->
+<div id="shareModal" class="modal">
+	<div class="modal-content">
+		<div class="input-field">
+			<textarea id="message" class="materialize-textarea"></textarea>
+			<label for="message">Escriba un texto para compartir</label>
+		</div>
+		<ul class="collection one-line preview">
+			<li class="collection-item avatar">
+				<i class="fas fa-store material-icons circle"></i>
+				<span class="title"><%= createShareText(ad.price, ad.title) %></span>
+			</li>
+		</ul>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cerrar</a>
+		<a onclick="share(ad.id, ad.price, ad.title)" class="modal-close waves-effect waves-green green-text btn-flat">Enviar</a>
+	</div>
 </div>
