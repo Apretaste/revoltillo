@@ -4,6 +4,7 @@ use Apretaste\Request;
 use Apretaste\Response;
 use Framework\Alert;
 use Framework\Config;
+use Framework\Crawler;
 use Framework\Revoltillo;
 
 class Service
@@ -130,12 +131,22 @@ class Service
 		// save the first image locally for the view
 		$images = [];
 		if (!empty($result->image_urls[0])) {
+
 			// save image file if not in the cache
+            $content = '';
 			$img = TEMP_PATH . md5($result->image_urls[0]) . ".jpg";
+
 			if (!file_exists($img)) {
-				file_put_contents($img, file_get_contents($result->image_urls[0]));
+			    try {
+                    $content = Crawler::get($result->image_urls[0]);
+                    file_put_contents($img, $content);
+                }
+			    catch (Alert $a) {}
 			}
-			$images[] = $img;
+
+			if ($content !== '') {
+                $images[] = $img;
+            }
 		}
 
 		// prepare info for the view
