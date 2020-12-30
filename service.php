@@ -19,6 +19,15 @@ class Service
 	 */
 	public function _main(Request $request, Response $response)
 	{
+		// block access temporarely
+		$response->setCache("day");
+		return $response->setTemplate("message.ejs", [
+			'header' => 'Error en Revoltillo', 
+			'icon' => 'sentiment_very_dissatisfied',
+			'text' => 'La página revoltillo.com está temporalmente caída, por lo cual no podemos mostrar este servicio. Estaremos de vuelta en cuanto el problema se arregle. Realmente sentimos este inconveniente.'
+		]);
+
+
 		$response->setCache("year");
 		$response->setTemplate("index.ejs");
 	}
@@ -33,6 +42,16 @@ class Service
 	 */
 	public function _search(Request $request, Response $response)
 	{
+		// block access temporarely
+		$response->setCache("day");
+		return $response->setTemplate("message.ejs", [
+			'header' => 'Error en Revoltillo', 
+			'icon' => 'sentiment_very_dissatisfied',
+			'text' => 'La página revoltillo.com está temporalmente caída, por lo cual no podemos mostrar este servicio. Estaremos de vuelta en cuanto el problema se arregle. Realmente sentimos este inconveniente.'
+		]);
+
+
+
 		// get the query to run
 		$query = $request->input->data->q ?? false;
 
@@ -109,6 +128,16 @@ class Service
 	 */
 	public function _details(Request $request, Response $response)
 	{
+		// block access temporarely
+		$response->setCache("day");
+		return $response->setTemplate("message.ejs", [
+			'header' => 'Error en Revoltillo', 
+			'icon' => 'sentiment_very_dissatisfied',
+			'text' => 'La página revoltillo.com está temporalmente caída, por lo cual no podemos mostrar este servicio. Estaremos de vuelta en cuanto el problema se arregle. Realmente sentimos este inconveniente.'
+		]);
+
+
+
 		// get the ID of the classified
 		$id = $request->input->data->id;
 		$q = $request->input->data->q;
