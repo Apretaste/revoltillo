@@ -18,6 +18,14 @@ class Service
 	 */
 	public function _main(Request $request, Response $response)
 	{
+		// block access temporarely
+		$response->setCache("day");
+		return $response->setTemplate("message.ejs", [
+			'header' => 'Error en Revoltillo', 
+			'icon' => 'sentiment_very_dissatisfied',
+			'text' => 'La página revoltillo.com está temporalmente caída, por lo cual no podemos mostrar este servicio. Estaremos de vuelta en cuanto el problema se arregle. Realmente sentimos este inconveniente.'
+		]);
+
 		$response->setCache("year");
 		$response->setTemplate("index.ejs");
 	}
