@@ -40,7 +40,7 @@ class Service
 
 		if (!$query) {
 			return $response->setTemplate("message.ejs", [
-				'header' => 'Lo sentimos', 
+				'header' => 'Lo sentimos',
 				'icon' => 'error_outline',
 				'text' => 'Su búsqueda esta vacía',
 				'button' => ['caption' => 'Inicio', 'href' => 'REVOLTILLO']
@@ -53,9 +53,8 @@ class Service
 		try {
 			$results = $isCategory ? Revoltillo::searchByCategory($query) : Revoltillo::searchByKeyword($query);
 		} catch (Exception $e) {
-			die($e);
 			return $response->setTemplate("message.ejs", [
-				'header' => 'Error conectando a Revoltillo', 
+				'header' => 'Error conectando a Revoltillo',
 				'icon' => 'error_outline',
 				'text' => 'Hemos tenido un error conectandonos a Revoltillo. Probablemente es algo temporal, porque su servidor está ocupado. Vuelva a intentar, y si el problema persiste trate en una hora.',
 				'button' => ['caption' => 'Inicio', 'href' => 'REVOLTILLO']
@@ -84,7 +83,7 @@ class Service
 
 		if (empty($ads)) {
 			return $response->setTemplate("message.ejs", [
-				'header' => 'Lo sentimos', 
+				'header' => 'Lo sentimos',
 				'icon' => 'error_outline',
 				'text' => 'No tenemos resultados para esta búsqueda',
 				'button' => ['caption' => 'Atrás', 'href' => 'REVOLTILLO']
@@ -121,7 +120,7 @@ class Service
 
 		if (!isset($data->_source)) {
 			return $response->setTemplate("message.ejs", [
-				'header' => 'Lo sentimos', 
+				'header' => 'Lo sentimos',
 				'icon' => 'error_outline',
 				'text' => 'El artículo que busca no pudo ser encontrado',
 				'button' => ['caption' => 'Atrás', 'href' => 'REVOLTILLO BUSCAR'],
@@ -136,20 +135,20 @@ class Service
 		if (!empty($result->image_urls[0])) {
 
 			// save image file if not in the cache
-            $content = '';
+			$content = '';
 			$img = TEMP_PATH . md5($result->image_urls[0]) . ".jpg";
 
 			if (!file_exists($img)) {
-			    try {
-                    $content = Crawler::get($result->image_urls[0]);
-                    file_put_contents($img, $content);
-                }
-			    catch (Alert $a) {}
+				try {
+					$content = Crawler::get($result->image_urls[0]);
+					file_put_contents($img, $content);
+				} catch (Alert $a) {
+				}
 			}
 
 			if ($content !== '') {
-                $images[] = $img;
-            }
+				$images[] = $img;
+			}
 		}
 
 		// prepare info for the view
