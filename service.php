@@ -47,7 +47,7 @@ class Service
 			]);
 		}
 
-		$isCategory = in_array($query, ['casas', 'autos', 'electronica', 'servicios', 'ventas', 'empleos']);
+		$isCategory = in_array($query, ['viviendas', 'autos', 'electronica', 'servicios', 'compra venta', 'empleos']);
 
 		// get data from the backend
 		try {
