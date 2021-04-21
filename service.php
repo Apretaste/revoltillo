@@ -1,11 +1,11 @@
 <?php
 
+use Apretaste\Alert;
+use Apretaste\Config;
+use Apretaste\Crawler;
 use Apretaste\Request;
 use Apretaste\Response;
-use Framework\Alert;
-use Framework\Config;
-use Framework\Crawler;
-use Framework\Revoltillo;
+use Apretaste\Revoltillo;
 
 class Service
 {
@@ -19,8 +19,6 @@ class Service
 	 */
 	public function _main(Request $request, Response $response)
 	{
-
-
 		$response->setCache("year");
 		$response->setTemplate("index.ejs");
 	}
@@ -131,28 +129,38 @@ class Service
 		$result = $data->_source;
 
 		// save the first image locally for the view
+		// NOTE: using "while" as "if" to allow "break"
 		$images = [];
-		if (!empty($result->image_urls[0])) {
+		while ($result->cover_image) {
+			// get the path to the image
+			$imgBucketPath = 'https://d25clsar19qr19.cloudfront.net/img/thumbs/big/' . $result->cover_image;
 
-			// save image file if not in the cache
-			$content = '';
-			$img = TEMP_PATH . md5($result->image_urls[0]) . ".jpg";
+			// return the image path for the http environment
+			if (APP_ENVIRONMENT == 'http') {
+				$images[] = $imgBucketPath;
+				break;
+			}
 
-			if (!file_exists($img)) {
+			// create the tmp path to the image
+			$imgTempPath = TEMP_PATH . 'cache/' . $result->cover_image;
+
+			// download the image if not in cache
+			if (!file_exists($imgTempPath)) {
 				try {
-					$content = Crawler::get($result->image_urls[0]);
-					file_put_contents($img, $content);
-				} catch (Alert $a) {
-				}
+					$content = Crawler::get($imgBucketPath);
+					file_put_contents($imgTempPath, $content);
+				} catch (Alert $a) { break; }
 			}
 
-			if ($content !== '') {
-				$images[] = $img;
-			}
+			// add to images
+			$images[] = $imgTempPath;
+
+			// break to avoid an infinite loop
+			break;
 		}
 
 		// prepare info for the view
-		$ad = [
+		$rad = [
 			'id' => $id,
 			'title' => $this->cleanString($result->title),
 			'description' => $this->cleanString($result->description ?? ''),
@@ -167,7 +175,7 @@ class Service
 
 		// send data to the view
 		$response->setCache("year");
-		$response->setTemplate("detail.ejs", ["q" => $q, "ad" => $ad], $images);
+		$response->setTemplate("detail.ejs", ["q" => $q, "rad" => $rad], $images);
 	}
 
 	/**

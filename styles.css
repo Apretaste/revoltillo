@@ -112,3 +112,7 @@
 .large-text {
 	overflow: hidden;
 }
+
+.fullscreen {
+	width: 100%;
+}
